@@ -9,8 +9,6 @@ const port = process.env.PORT || 5000;
 app.use(cors())
 app.use(express.json())
 
-// gacData S7ipGzvYUBCFBtdb
-
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.qpfli06.mongodb.net/?retryWrites=true&w=majority`;
@@ -28,6 +26,17 @@ async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
+
+        const gacCollection = client.db('gacData').collection('gac')
+
+        app.post('/allgacdata', async (req, res) => {
+            const user = req.body;
+            console.log(user)
+            const result = await gacCollection.insertOne(user)
+            res.send(result)
+        })
+
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
