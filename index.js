@@ -1,5 +1,5 @@
 const express = require('express');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const cors = require('cors')
 const app = express();
@@ -29,9 +29,49 @@ async function run() {
 
         const gacCollection = client.db('gacData').collection('gac')
 
+        app.get('/allgacdata', async (req, res) => {
+            const cursor = gacCollection.find();
+            const result = await cursor.toArray();
+            res.send(result)
+        })
+
+        // app.get('/allgacdata/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: new ObjectId(id) }
+        //     const user = await gacCollection.findOne(query)
+        //     res.send(user)
+        // })
+
+
+
+
+
+
+        // app.get('/mygacdata', async(req, res) => {
+        //     console.log(req.query.email)
+        //     let query = {}
+        //     if(req.query?.email){
+        //         query = {email: req.query.email}
+        //     }
+        //     const result = await gacCollection.find(query).toArray();
+        //     res.send(result)
+        // })
+
+        app.get("/mygacdata/:email", async (req, res) => {
+            console.log(req.params.id);
+            const gacs = await gacCollection
+              .find({
+                email: req.params.email,
+              })
+              .toArray();
+            res.send(gacs);
+          });
+
+
+
+
         app.post('/allgacdata', async (req, res) => {
             const user = req.body;
-            console.log(user)
             const result = await gacCollection.insertOne(user)
             res.send(result)
         })
