@@ -45,7 +45,17 @@ async function run() {
         app.put('/allgacdata/:id', async(req,res)=> {
             const id = req.params.id;
             const update = req.body;
-            console.log(id,update)
+            const query = {_id: new ObjectId(id)}
+            const options = { upsert: true };
+            const updated = {
+                $set: {
+                    price: update.price,
+                    quantity: update.quantity,
+                    description: update.description
+                }
+            }
+            const result = await gacCollection.updateOne(query, updated, options);
+            res.send(result)
         })
 
 
