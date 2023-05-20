@@ -35,44 +35,40 @@ async function run() {
             res.send(result)
         })
 
-        // app.get('/allgacdata/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { _id: new ObjectId(id) }
-        //     const user = await gacCollection.findOne(query)
-        //     res.send(user)
-        // })
+        app.get('/allgacdata/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const user = await gacCollection.findOne(query)
+            res.send(user)
+        })
 
+        app.put('/allgacdata/:id', async(req,res)=> {
+            const id = req.params.id;
+            const update = req.body;
+            console.log(id,update)
+        })
 
-
-
-
-
-        // app.get('/mygacdata', async(req, res) => {
-        //     console.log(req.query.email)
-        //     let query = {}
-        //     if(req.query?.email){
-        //         query = {email: req.query.email}
-        //     }
-        //     const result = await gacCollection.find(query).toArray();
-        //     res.send(result)
-        // })
 
         app.get("/mygacdata/:email", async (req, res) => {
-            console.log(req.params.id);
             const gacs = await gacCollection
-              .find({
-                email: req.params.email,
-              })
-              .toArray();
+                .find({
+                    email: req.params.email,
+                })
+                .toArray();
             res.send(gacs);
-          });
-
-
+        });
 
 
         app.post('/allgacdata', async (req, res) => {
             const user = req.body;
             const result = await gacCollection.insertOne(user)
+            res.send(result)
+        })
+
+        app.delete('/delete/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)}
+            const result = await gacCollection.deleteOne(query);
             res.send(result)
         })
 
