@@ -25,27 +25,37 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
 
         const gacCollection = client.db('gacData').collection('gac')
 
+        // find all data from mongoDb
         app.get('/allgacdata', async (req, res) => {
-            const cursor = gacCollection.find();
-            const result = await cursor.toArray();
+            const result = await gacCollection.find().toArray();
             res.send(result)
         })
 
-        app.get('/allgacdata/:id', async (req, res) => {
+        // Sorting All Sub Category data
+        app.get('/allgacdata/:text', async (req, res) => {
+            if (req.params.text == 'sports' || req.params.text == 'truck' || req.params.text == 'police') {
+                const result = await gacCollection.find({ category: req.params.text }).toArray();
+                return res.send(result)
+            }
+        })
+
+        // for view details unique id
+        app.get('/viewing/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
-            const user = await gacCollection.findOne(query)
+            const user = await gacCollection.findOne(query);
             res.send(user)
         })
 
-        app.put('/allgacdata/:id', async(req,res)=> {
+        // for update data unique id
+        app.put('/viewing/:id', async (req, res) => {
             const id = req.params.id;
             const update = req.body;
-            const query = {_id: new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const options = { upsert: true };
             const updated = {
                 $set: {
@@ -58,7 +68,7 @@ async function run() {
             res.send(result)
         })
 
-
+        // for "my toys" router
         app.get("/mygacdata/:email", async (req, res) => {
             const gacs = await gacCollection
                 .find({
@@ -69,15 +79,17 @@ async function run() {
         });
 
 
+        // for all data post in mongoDb
         app.post('/allgacdata', async (req, res) => {
             const user = req.body;
             const result = await gacCollection.insertOne(user)
             res.send(result)
         })
 
-        app.delete('/delete/:id', async(req, res) => {
+        // delete from client side data
+        app.delete('/delete/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const result = await gacCollection.deleteOne(query);
             res.send(result)
         })
